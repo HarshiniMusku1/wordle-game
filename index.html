@@ -19,13 +19,15 @@
       margin-bottom: 2rem;
     }
     .board {
-      display: grid;
-      grid-template-columns: repeat(5, 60px);
-      grid-gap: 10px;
-      margin-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 2rem;
     }
     .row {
-      display: contents;
+      display: grid;
+      grid-template-columns: repeat(5, 60px);
+      gap: 10px;
     }
     .tile {
       width: 60px;
@@ -61,32 +63,80 @@
       margin-left: 1rem;
       font-size: 1rem;
     }
+    .keyboard {
+      display: grid;
+      grid-template-columns: repeat(10, 30px);
+      gap: 5px;
+      margin-top: 20px;
+    }
+    .key {
+      width: 30px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #818384;
+      color: white;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    .key.correct {
+      background-color: #538d4e;
+    }
+    .key.present {
+      background-color: #b59f3b;
+    }
+    .key.absent {
+      background-color: #3a3a3c;
+    }
   </style>
 </head>
 <body>
   <h1>Mini Wordle</h1>
-  <div id="board"></div>
+  <div id="board" class="board"></div>
   <div>
     <input type="text" id="guess" maxlength="5" autofocus />
     <button onclick="submitGuess()">Guess</button>
   </div>
+  <div id="keyboard" class="keyboard"></div>
 
   <script>
     const secret = "CRANE";
     const board = document.getElementById("board");
+    const keyboard = document.getElementById("keyboard");
     const maxGuesses = 6;
     let currentRow = 0;
+    const keyStatus = {};
+
+    const allKeys = "QWERTYUIOPASDFGHJKLZXCVBNM";
+    allKeys.split("").forEach(char => {
+      const key = document.createElement("div");
+      key.textContent = char;
+      key.classList.add("key");
+      key.id = `key-${char}`;
+      keyboard.appendChild(key);
+    });
 
     function createRow(guess, feedback) {
       const row = document.createElement("div");
       row.classList.add("row");
-
       for (let i = 0; i < 5; i++) {
         const tile = document.createElement("div");
         tile.classList.add("tile");
         tile.textContent = guess[i];
         tile.classList.add(feedback[i]);
         row.appendChild(tile);
+
+        const key = document.getElementById(`key-${guess[i]}`);
+        if (key) {
+          if (feedback[i] === "correct") {
+            key.className = "key correct";
+          } else if (feedback[i] === "present" && key.className !== "key correct") {
+            key.className = "key present";
+          } else if (feedback[i] === "absent" && !key.className.includes("correct") && !key.className.includes("present")) {
+            key.className = "key absent";
+          }
+        }
       }
       board.appendChild(row);
     }
@@ -114,7 +164,6 @@
           }
         }
       }
-
       return feedback;
     }
 
