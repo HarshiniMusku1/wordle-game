@@ -26,7 +26,7 @@
     }
     .row {
       display: grid;
-      grid-template-columns: repeat(5, 60px);
+      grid-template-columns: repeat(6, 60px);
       gap: 10px;
     }
     .tile {
@@ -55,7 +55,7 @@
       padding: 0.5rem;
       font-size: 1.2rem;
       text-transform: uppercase;
-      width: 200px;
+      width: 240px;
       text-align: center;
     }
     button {
@@ -95,13 +95,13 @@
   <h1>Mini Wordle</h1>
   <div id="board" class="board"></div>
   <div>
-    <input type="text" id="guess" maxlength="5" autofocus />
+    <input type="text" id="guess" maxlength="6" autofocus />
     <button onclick="submitGuess()">Guess</button>
   </div>
   <div id="keyboard" class="keyboard"></div>
 
   <script>
-    const secret = "CRANE";
+    const secret = "HBDSRK";
     const board = document.getElementById("board");
     const keyboard = document.getElementById("keyboard");
     const maxGuesses = 6;
@@ -120,7 +120,7 @@
     function createRow(guess, feedback) {
       const row = document.createElement("div");
       row.classList.add("row");
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 6; i++) {
         const tile = document.createElement("div");
         tile.classList.add("tile");
         tile.textContent = guess[i];
@@ -142,11 +142,11 @@
     }
 
     function getFeedback(guess) {
-      const feedback = Array(5).fill("absent");
-      const used = Array(5).fill(false);
+      const feedback = Array(6).fill("absent");
+      const used = Array(6).fill(false);
 
       // Green pass
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 6; i++) {
         if (guess[i] === secret[i]) {
           feedback[i] = "correct";
           used[i] = true;
@@ -154,9 +154,9 @@
       }
 
       // Yellow pass
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 6; i++) {
         if (feedback[i] === "correct") continue;
-        for (let j = 0; j < 5; j++) {
+        for (let j = 0; j < 6; j++) {
           if (!used[j] && guess[i] === secret[j]) {
             feedback[i] = "present";
             used[j] = true;
@@ -171,8 +171,8 @@
       const input = document.getElementById("guess");
       const guess = input.value.toUpperCase();
 
-      if (guess.length !== 5) {
-        alert("Enter a 5-letter word.");
+      if (guess.length !== 6) {
+        alert("Enter a 6-letter word.");
         return;
       }
 
