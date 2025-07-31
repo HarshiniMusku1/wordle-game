@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini Wordle</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 2rem;
+      background-color: #121213;
+      color: #fff;
+    }
+    h1 {
+      margin-bottom: 2rem;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(5, 60px);
+      grid-gap: 10px;
+      margin-bottom: 1rem;
+    }
+    .row {
+      display: contents;
+    }
+    .tile {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #3a3a3c;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      text-transform: uppercase;
+      border-radius: 5px;
+    }
+    .correct {
+      background-color: #538d4e;
+    }
+    .present {
+      background-color: #b59f3b;
+    }
+    .absent {
+      background-color: #3a3a3c;
+    }
+    input {
+      padding: 0.5rem;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      width: 200px;
+      text-align: center;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      margin-left: 1rem;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mini Wordle</h1>
+  <div id="board"></div>
+  <div>
+    <input type="text" id="guess" maxlength="5" autofocus />
+    <button onclick="submitGuess()">Guess</button>
+  </div>
+
+  <script>
+    const secret = "CRANE";
+    const board = document.getElementById("board");
+    const maxGuesses = 6;
+    let currentRow = 0;
+
+    function createRow(guess, feedback) {
+      const row = document.createElement("div");
+      row.classList.add("row");
+
+      for (let i = 0; i < 5; i++) {
+        const tile = document.createElement("div");
+        tile.classList.add("tile");
+        tile.textContent = guess[i];
+        tile.classList.add(feedback[i]);
+        row.appendChild(tile);
+      }
+      board.appendChild(row);
+    }
+
+    function getFeedback(guess) {
+      const feedback = Array(5).fill("absent");
+      const used = Array(5).fill(false);
+
+      // Green pass
+      for (let i = 0; i < 5; i++) {
+        if (guess[i] === secret[i]) {
+          feedback[i] = "correct";
+          used[i] = true;
+        }
+      }
+
+      // Yellow pass
+      for (let i = 0; i < 5; i++) {
+        if (feedback[i] === "correct") continue;
+        for (let j = 0; j < 5; j++) {
+          if (!used[j] && guess[i] === secret[j]) {
+            feedback[i] = "present";
+            used[j] = true;
+            break;
+          }
+        }
+      }
+
+      return feedback;
+    }
+
+    function submitGuess() {
+      const input = document.getElementById("guess");
+      const guess = input.value.toUpperCase();
+
+      if (guess.length !== 5) {
+        alert("Enter a 5-letter word.");
+        return;
+      }
+
+      if (currentRow >= maxGuesses) {
+        alert("No more guesses! Refresh to try again.");
+        return;
+      }
+
+      const feedback = getFeedback(guess);
+      createRow(guess, feedback);
+      currentRow++;
+      input.value = "";
+
+      if (guess === secret) {
+        setTimeout(() => alert("🎉 You guessed it!"), 100);
+      } else if (currentRow === maxGuesses) {
+        setTimeout(() => alert(`The word was ${secret}.`), 100);
+      }
+    }
+  </script>
+</body>
+</html>
